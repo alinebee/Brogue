@@ -410,18 +410,24 @@ boolean saveHighScore(rogueHighScoresEntry theEntry) {
 	return true;
 }
 
+
+
 void initializeBrogueSaveLocation() {
-    char path[PATH_MAX];
-	CFBundleRef mainBundle = CFBundleGetMainBundle();
-    CFURLRef bundleURL = CFBundleCopyBundleURL(mainBundle);
-	CFURLRef saveURL = CFURLCreateCopyDeletingLastPathComponent(NULL, bundleURL);
-	
-    if (!CFURLGetFileSystemRepresentation(saveURL, TRUE, (UInt8 *)path, PATH_MAX)) {
-        // error!
+    NSFileManager *manager = [NSFileManager defaultManager];
+    
+    //Look up the full path to the user's Application Support folder (usually ~/Library/Application Support/).
+    NSString *basePath = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex: 0];
+    
+    //Use a folder under Application Support named after the application.
+    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
+    NSString *supportPath = [basePath stringByAppendingPathComponent: appName];
+    
+    //Create our folder the first time it is needed.
+    if (![manager fileExistsAtPath: supportPath])
+    {
+        [[NSFileManager defaultManager] createDirectoryAtPath: supportPath attributes: nil];
     }
-	
-    CFRelease(saveURL);
-    CFRelease(bundleURL);
-	
-    chdir(path);
+    
+    //Set the working directory to this path, so that savegames and recordings will be stored here.
+    [manager changeCurrentDirectoryPath: supportPath];
 }
