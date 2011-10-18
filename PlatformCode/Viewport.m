@@ -124,10 +124,12 @@ short theFontSize = 13;
 	}
 	for ( j = startY; j < endY; j++ ) {
 		for ( i = startX; i < endX; i++ ) {
-			[bgColorArray[i][j] set];
-			[NSBezierPath fillRect:rectArray[i][j]];
-			//NSLog(@"bgColorArray[%i][%i] is %@; letter is %@, letter color is %@", i, j, bgColorArray[i][j], letterArray[i][j], [attributes[i][j] objectForKey:NSForegroundColorAttributeName]);
-			[self drawTheString:letterArray[i][j] centeredIn:rectArray[i][j] withAttributes:attributes[i][j]];
+            if ([self needsToDrawRect: rectArray[i][j]]) {
+                [bgColorArray[i][j] set];
+                [NSBezierPath fillRect:rectArray[i][j]];
+                //NSLog(@"bgColorArray[%i][%i] is %@; letter is %@, letter color is %@", i, j, bgColorArray[i][j], letterArray[i][j], [attributes[i][j] objectForKey:NSForegroundColorAttributeName]);
+                [self drawTheString:letterArray[i][j] centeredIn:rectArray[i][j] withAttributes:attributes[i][j]];
+            }
 		}
 	}
 	[pool drain];
